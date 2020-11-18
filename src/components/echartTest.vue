@@ -124,9 +124,9 @@ export default {
       // }
     },
     updateData() {
-      this.$axios.get('/insert')
+      this.$axios.post('/getList/stream')
         .then((response) => {
-          this.message = response.data
+          this.message = response.data.status
           console.log(response)
         })
         .catch(function (error) {
