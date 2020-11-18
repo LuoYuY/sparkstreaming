@@ -16,7 +16,6 @@
 
 <script>
 import china from '../assets/china'
-
 export default {
   name: 'Echart',
   data() {
@@ -101,7 +100,7 @@ export default {
             var info = '<p style="font-size:18px">' + params.name + '</p><p style="font-size:14px">这里可以写一些，想展示在页面上的别的信息</p>'
             return info;
           },
-          backgroundColor: "#ff7f50",//提示标签背景颜色
+          backgroundColor: "#ffe250",//提示标签背景颜色
           textStyle: {color: "#fff"} //提示标签字体颜色
         },
 //左侧小导航图标
