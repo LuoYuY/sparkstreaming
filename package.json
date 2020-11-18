@@ -15,7 +15,10 @@
   "dependencies": {
     "axios": "^0.21.0",
     "echarts": "^4.9.0",
+    "ee-first": "^1.1.1",
+    "encodeurl": "^1.0.2",
     "express": "^4.17.1",
+    "ftp": "^0.3.10",
     "iview": "^3.5.4",
     "mongodb": "^3.6.3",
     "mongoose": "^5.10.15",

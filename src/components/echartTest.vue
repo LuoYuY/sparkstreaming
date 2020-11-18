@@ -1,5 +1,6 @@
 <template>
   <div id="Chart">
+    {{ message }}
     <Button v-on:click="start()">start</Button>
     <div class="content">
       <div id="lineChart" :style="{width: '800px', height: '600px'}"></div>
@@ -15,6 +16,7 @@ export default {
   name: 'Echart',
   data() {
     return {
+      message: null,
       lineChart: {
         chart: null,
         option: null,
@@ -116,13 +118,23 @@ export default {
             data: that.barChartSimple.data
           }]
         })
-      }, 500)
+      }, 2000)
       // if (this.lineChart.option && typeof this.lineChart.option === "object") {
       //   this.lineChart.chart.setOption(this.lineChart.option, true);
       // }
     },
     updateData() {
-
+      this.$axios.get('/insert')
+        .then((response) => {
+          this.message = response.data
+          console.log(response)
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+        .then(function () {
+          // always executed
+        })
 
       this.lineChart.data = []
       for (let i = 0; i < 24; i++) {
