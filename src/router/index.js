@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '../components/HelloWorld'
 import Echart from  '../components/echartTest'
-
 Vue.use(Router)
 
 export default new Router({
@@ -10,6 +9,11 @@ export default new Router({
   routes: [
     {
       path: '/',
+      name: 'Echart',
+      component: Echart
+    },
+    {
+      path: '/streaming',
       name: 'Echart',
       component: Echart
     },

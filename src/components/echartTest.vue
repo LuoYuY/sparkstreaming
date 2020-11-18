@@ -3,20 +3,30 @@
     {{ message }}
     <Button v-on:click="start()">start</Button>
     <div class="content">
-      <div id="lineChart" :style="{width: '800px', height: '600px'}"></div>
+      <div id="map-wrap" :style="{width: '500px', height: '500px'}"></div>
+
       <div id="barChartSimple" :style="{width: '800px', height: '600px'}"></div>
-      <div id="barChartStatic" :style="{width: '800px', height: '600px'}"></div>
+      <!--      <div id="barChartStatic" :style="{width: '800px', height: '600px'}"></div>-->
+      <div id="lineChart" :style="{width: '800px', height: '600px'}"></div>
+      <!-- 这里以后是地图 -->
+
     </div>
   </div>
 </template>
 
 <script>
+import china from '../assets/china'
 
 export default {
   name: 'Echart',
   data() {
     return {
       message: null,
+      mapChart: {
+        chart: null,
+        option: null,
+        data: []
+      },
       lineChart: {
         chart: null,
         option: null,
@@ -33,7 +43,7 @@ export default {
       barChartStatic: {
         chart: null,
         option: null,
-        category: ['cate1', 'cate2','cate3'],
+        category: ['cate1', 'cate2', 'cate3'],
         data: []
       }
     }
@@ -41,10 +51,92 @@ export default {
   mounted() {
     this.createLineTable()
     this.createBarTable()
+    this.createMap()
   },
   methods: {
     start() {
       this.addData();
+    },
+    randomData() {
+      return Math.round(Math.random() * 500);
+    },
+    createMap() {
+      let dataMap = [
+        {name: '北京', value: '100'}, {name: '天津', value: this.randomData()},
+        {name: '上海', value: this.randomData()}, {name: '重庆', value: this.randomData()},
+        {name: '河北', value: this.randomData()}, {name: '河南', value: this.randomData()},
+        {name: '云南', value: this.randomData()}, {name: '辽宁', value: this.randomData()},
+        {name: '黑龙江', value: this.randomData()}, {name: '湖南', value: this.randomData()},
+        {name: '安徽', value: this.randomData()}, {name: '山东', value: this.randomData()},
+        {name: '新疆', value: this.randomData()}, {name: '江苏', value: this.randomData()},
+        {name: '浙江', value: this.randomData()}, {name: '江西', value: this.randomData()},
+        {name: '湖北', value: this.randomData()}, {name: '广西', value: this.randomData()},
+        {name: '甘肃', value: this.randomData()}, {name: '山西', value: this.randomData()},
+        {name: '内蒙古', value: this.randomData()}, {name: '陕西', value: this.randomData()},
+        {name: '吉林', value: this.randomData()}, {name: '福建', value: this.randomData()},
+        {name: '贵州', value: this.randomData()}, {name: '广东', value: this.randomData()},
+        {name: '青海', value: this.randomData()}, {name: '西藏', value: this.randomData()},
+        {name: '四川', value: this.randomData()}, {name: '宁夏', value: this.randomData()},
+        {name: '海南', value: this.randomData()}, {name: '台湾', value: this.randomData()},
+        {name: '香港', value: this.randomData()}, {name: '澳门', value: this.randomData()}, {name: '南海诸岛', value: this.randomData()}
+      ]
+      let specialMap = [];
+      // 对dataMap进行处理，使其可以直接在页面上展示
+      for (var i = 0; i < specialMap.length; i++) {
+        for (var j = 0; j < dataMap.length; j++) {
+          if (specialMap[i] == dataMap[j].name) {
+            dataMap[j].selected = true;
+            break;
+          }
+
+        }
+      }
+      this.mapChart.chart = this.$echarts.init(document.getElementById('map-wrap'));
+      this.mapChart.option = {
+        geo: {
+          map: 'china',//地图类型为中国地图,要是世界那就是world,要是省市区：例如beijing、shanghai
+        },
+        tooltip: {
+          formatter: function (params) {
+            var info = '<p style="font-size:18px">' + params.name + '</p><p style="font-size:14px">这里可以写一些，想展示在页面上的别的信息</p>'
+            return info;
+          },
+          backgroundColor: "#ff7f50",//提示标签背景颜色
+          textStyle: {color: "#fff"} //提示标签字体颜色
+        },
+//左侧小导航图标
+        visualMap: {
+          show: true,
+          x: 'left',
+          y: 'center',
+          splitList: [
+            {start: 500, end: 600}, {start: 400, end: 500},
+            {start: 300, end: 400}, {start: 200, end: 300},
+            {start: 100, end: 200}, {start: 0, end: 100},
+          ],
+          color: ['#e70707', '#f13131', '#f59797',
+            '#eecece', '#eecece', '#f3eded']
+        },
+        series: [
+          {
+            name: '中国',
+            type: 'map',
+            mapType: 'china',
+
+            label: {
+              normal: {
+                show: true,//显示省份标签
+              },
+              emphasis: {
+                show: true,//对应的鼠标悬浮效果
+              }
+            },
+
+            data: dataMap
+          }
+        ]
+      }
+      this.mapChart.chart.setOption(this.mapChart.option)
     },
     createBarTable() {
       let dom = document.getElementById("barChartSimple")
