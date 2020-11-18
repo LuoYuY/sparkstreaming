@@ -3,11 +3,10 @@
     {{ message }}
     <Button v-on:click="start()">start</Button>
     <div class="content">
-      <div id="map-wrap" :style="{width: '500px', height: '500px'}"></div>
-
-      <div id="barChartSimple" :style="{width: '800px', height: '600px'}"></div>
+      <div id="map-wrap" :style="{width: '33%', height: '400px'}"></div>
+      <div id="barChartSimple" :style="{width: '33%', height: '400px'}"></div>
       <!--      <div id="barChartStatic" :style="{width: '800px', height: '600px'}"></div>-->
-      <div id="lineChart" :style="{width: '800px', height: '600px'}"></div>
+      <div id="lineChart" :style="{width: '33%', height: '400px'}"></div>
       <!-- 这里以后是地图 -->
 
     </div>
@@ -105,6 +104,20 @@ export default {
         },
 //左侧小导航图标
         visualMap: {
+          // min: 0,
+          // max: 350,
+          // text: ['High', 'Low'],//两端的文本
+          // realtime: false,
+          // calculable: true,
+          // itemWidth: 20, //图形的宽度，即长条的宽度。
+          // itemHeight: 90, //图形的高度，即长条的高度。
+          align: "auto", //指定组件中手柄和文字的摆放位置.可选值为：‘auto’ 自动决定。‘left’ 手柄和label在右。‘right’ 手柄和label在左。‘top’ 手柄和label在下。‘bottom’ 手柄和label在上。
+          left: "3%", //组件离容器左侧的距离,‘left’, ‘center’, ‘right’,‘20%’
+          top: "3% ", //组件离容器上侧的距离,‘top’, ‘middle’, ‘bottom’,‘20%’
+          right: "auto", //组件离容器右侧的距离,‘20%’
+          bottom: "auto", //组件离容器下侧的距离,‘20%’
+          orient: "vertical", //图例排列方向
+
           show: true,
           x: 'left',
           y: 'center',
@@ -114,7 +127,9 @@ export default {
             {start: 100, end: 200}, {start: 0, end: 100},
           ],
           color: ['#e70707', '#f13131', '#f59797',
-            '#eecece', '#eecece', '#f3eded']
+            '#eecece', '#eecece', '#f3eded'],
+          itemWidth: 10,
+          itemHeight: 5
         },
         series: [
           {
@@ -124,7 +139,7 @@ export default {
 
             label: {
               normal: {
-                show: true,//显示省份标签
+                show: false,//显示省份标签
               },
               emphasis: {
                 show: true,//对应的鼠标悬浮效果
@@ -244,6 +259,8 @@ export default {
 
 <style scoped>
 .content {
+  width:100%;
   display: flex;
+  flex-wrap: wrap;
 }
 </style>
