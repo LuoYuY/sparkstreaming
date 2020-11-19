@@ -6,6 +6,7 @@
       <div id="map-wrap" :style="{width: '33%', height: '400px'}"></div>
       <div id="barChartSimple" :style="{width: '33%', height: '400px'}"></div>
       <!--      <div id="barChartStatic" :style="{width: '800px', height: '600px'}"></div>-->
+      <div id="barChartHomeTeam" :style="{width: '33%', height: '400px'}"></div>
       <div id="lineChart" :style="{width: '33%', height: '400px'}"></div>
       <!-- 这里以后是地图 -->
 
@@ -15,6 +16,7 @@
 
 <script>
 import china from '../assets/china'
+
 export default {
   name: 'Echart',
   data() {
@@ -43,6 +45,12 @@ export default {
         option: null,
         category: ['cate1', 'cate2', 'cate3'],
         data: []
+      },
+      barChartHomeTeam: {
+        chart: null,
+        option: null,
+        category: [],
+        data: []
       }
     }
   },
@@ -50,6 +58,7 @@ export default {
     this.createLineTable()
     this.createBarTable()
     this.createMap()
+    this.createBarChartHomeTeam()
   },
   methods: {
     start() {
@@ -76,7 +85,10 @@ export default {
         {name: '青海', value: this.randomData()}, {name: '西藏', value: this.randomData()},
         {name: '四川', value: this.randomData()}, {name: '宁夏', value: this.randomData()},
         {name: '海南', value: this.randomData()}, {name: '台湾', value: this.randomData()},
-        {name: '香港', value: this.randomData()}, {name: '澳门', value: this.randomData()}, {name: '南海诸岛', value: this.randomData()}
+        {name: '香港', value: this.randomData()}, {name: '澳门', value: this.randomData()}, {
+          name: '南海诸岛',
+          value: this.randomData()
+        }
       ]
       let specialMap = [];
       // 对dataMap进行处理，使其可以直接在页面上展示
@@ -176,6 +188,58 @@ export default {
         this.barChartSimple.chart.setOption(this.barChartSimple.option, true);
       }
     },
+    createBarChartHomeTeam() {
+      let dom = document.getElementById("barChartHomeTeam")
+      this.barChartHomeTeam.chart = this.$echarts.init(dom)
+      // this.addData();
+      this.barChartHomeTeam.option = {
+        color: ['#1c8941'],
+        // title: "barChartHomeTeam",
+        tooltip: {
+          show: true
+        },
+        legend: {
+          data: ['人数']
+        },
+        xAxis: {
+          type: 'category',
+          data: this.barChartHomeTeam.category,
+          axisLabel: {
+            interval: 0, //坐标刻度之间的显示间隔，默认就可以了（默认是不重叠）
+            rotate: 38   //调整数值改变倾斜的幅度（范围-90到90）
+          },
+          grid: {
+            left: '18%',
+            bottom: '38%'
+          }
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            name: 'VALUE',
+            type: 'bar',
+            data: this.barChartHomeTeam.data,
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,  //开启显示
+                  position: 'top',  //在上方显示
+                  textStyle: {  //数值样式
+                    color: 'black',
+                    fontSize: 16
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+      if (this.barChartHomeTeam.option && typeof this.barChartHomeTeam.option === "object") {
+        this.barChartHomeTeam.chart.setOption(this.barChartHomeTeam.option, true);
+      }
+    },
     createLineTable() {
       let dom = document.getElementById("lineChart")
       this.lineChart.chart = this.$echarts.init(dom)
@@ -224,16 +288,53 @@ export default {
             data: that.barChartSimple.data
           }]
         })
-      }, 2000)
+        that.barChartHomeTeam.chart.setOption({
+          xAxis: {
+            type: 'category',
+            data: that.barChartHomeTeam.category
+          },
+          series: [{
+            name: 'VALUE',
+            data: that.barChartHomeTeam.data
+          }]
+        })
+      }, 1000)
       // if (this.lineChart.option && typeof this.lineChart.option === "object") {
       //   this.lineChart.chart.setOption(this.lineChart.option, true);
       // }
     },
     updateData() {
-      this.$axios.post('/getList/stream')
+      this.$axios.post('/getList/getMap')
         .then((response) => {
-          this.message = response.data.status
-          console.log(response)
+          // "status": 0,
+          //   "msg": "fetch success",
+          //   "data": [
+          //   {
+          //     "number": 105,
+          //     "_id": {
+          //       "$oid": "5fb5d7bb4280fb946c93d88a"
+          //     },
+          //     "hometeam": "拜仁慕尼黑"
+          //   }
+          let array = []
+          this.barChartHomeTeam.category = [];
+          this.barChartHomeTeam.data = [];
+          array = JSON.parse(JSON.stringify(response.data.data))
+          for (let i = 0; i < array.length; i++) {
+            // const obj = { // 关键！ 创建一个新对象
+            //   id: i + 1,
+            //   name: array[i].name,
+            //   reason: array[i].reason,
+            //   createDate: array[i].createDate.slice(1),
+            //   status: status
+            // }
+            this.barChartHomeTeam.category.push(array[i].hometeam)
+            this.barChartHomeTeam.data.push(array[i].number)
+
+          }
+          //
+          // this.message = response.data.status
+          // console.log(response)
         })
         .catch(function (error) {
           console.log(error)
@@ -259,7 +360,7 @@ export default {
 
 <style scoped>
 .content {
-  width:100%;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
 }
