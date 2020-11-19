@@ -25,7 +25,7 @@ export default {
       mapChart: {
         chart: null,
         option: null,
-        data: []
+        dataMap: []
       },
       lineChart: {
         chart: null,
@@ -68,39 +68,6 @@ export default {
       return Math.round(Math.random() * 500);
     },
     createMap() {
-      let dataMap = [
-        {name: '北京', value: '100'}, {name: '天津', value: this.randomData()},
-        {name: '上海', value: this.randomData()}, {name: '重庆', value: this.randomData()},
-        {name: '河北', value: this.randomData()}, {name: '河南', value: this.randomData()},
-        {name: '云南', value: this.randomData()}, {name: '辽宁', value: this.randomData()},
-        {name: '黑龙江', value: this.randomData()}, {name: '湖南', value: this.randomData()},
-        {name: '安徽', value: this.randomData()}, {name: '山东', value: this.randomData()},
-        {name: '新疆', value: this.randomData()}, {name: '江苏', value: this.randomData()},
-        {name: '浙江', value: this.randomData()}, {name: '江西', value: this.randomData()},
-        {name: '湖北', value: this.randomData()}, {name: '广西', value: this.randomData()},
-        {name: '甘肃', value: this.randomData()}, {name: '山西', value: this.randomData()},
-        {name: '内蒙古', value: this.randomData()}, {name: '陕西', value: this.randomData()},
-        {name: '吉林', value: this.randomData()}, {name: '福建', value: this.randomData()},
-        {name: '贵州', value: this.randomData()}, {name: '广东', value: this.randomData()},
-        {name: '青海', value: this.randomData()}, {name: '西藏', value: this.randomData()},
-        {name: '四川', value: this.randomData()}, {name: '宁夏', value: this.randomData()},
-        {name: '海南', value: this.randomData()}, {name: '台湾', value: this.randomData()},
-        {name: '香港', value: this.randomData()}, {name: '澳门', value: this.randomData()}, {
-          name: '南海诸岛',
-          value: this.randomData()
-        }
-      ]
-      let specialMap = [];
-      // 对dataMap进行处理，使其可以直接在页面上展示
-      for (var i = 0; i < specialMap.length; i++) {
-        for (var j = 0; j < dataMap.length; j++) {
-          if (specialMap[i] == dataMap[j].name) {
-            dataMap[j].selected = true;
-            break;
-          }
-
-        }
-      }
       this.mapChart.chart = this.$echarts.init(document.getElementById('map-wrap'));
       this.mapChart.option = {
         geo: {
@@ -108,35 +75,27 @@ export default {
         },
         tooltip: {
           formatter: function (params) {
-            var info = '<p style="font-size:18px">' + params.name + '</p><p style="font-size:14px">这里可以写一些，想展示在页面上的别的信息</p>'
+            var info = '<p style="font-size:8px">' + params.name + '</p><p style="font-size:8px">'+params.value+'人</p>'
             return info;
           },
-          backgroundColor: "#ffe250",//提示标签背景颜色
+          backgroundColor: "#575555",//提示标签背景颜色
           textStyle: {color: "#fff"} //提示标签字体颜色
         },
 //左侧小导航图标
         visualMap: {
-          // min: 0,
-          // max: 350,
-          // text: ['High', 'Low'],//两端的文本
-          // realtime: false,
-          // calculable: true,
-          // itemWidth: 20, //图形的宽度，即长条的宽度。
-          // itemHeight: 90, //图形的高度，即长条的高度。
           align: "auto", //指定组件中手柄和文字的摆放位置.可选值为：‘auto’ 自动决定。‘left’ 手柄和label在右。‘right’ 手柄和label在左。‘top’ 手柄和label在下。‘bottom’ 手柄和label在上。
           left: "3%", //组件离容器左侧的距离,‘left’, ‘center’, ‘right’,‘20%’
           top: "3% ", //组件离容器上侧的距离,‘top’, ‘middle’, ‘bottom’,‘20%’
           right: "auto", //组件离容器右侧的距离,‘20%’
           bottom: "auto", //组件离容器下侧的距离,‘20%’
           orient: "vertical", //图例排列方向
-
           show: true,
           x: 'left',
           y: 'center',
           splitList: [
-            {start: 500, end: 600}, {start: 400, end: 500},
-            {start: 300, end: 400}, {start: 200, end: 300},
-            {start: 100, end: 200}, {start: 0, end: 100},
+            {start: 50, end: 60}, {start: 40, end: 50},
+            {start: 30, end: 40}, {start: 20, end: 30},
+            {start: 10, end: 20}, {start: 0, end: 10},
           ],
           color: ['#e70707', '#f13131', '#f59797',
             '#eecece', '#eecece', '#f3eded'],
@@ -157,8 +116,7 @@ export default {
                 show: true,//对应的鼠标悬浮效果
               }
             },
-
-            data: dataMap
+            data: this.mapChart.dataMap
           }
         ]
       }
@@ -276,6 +234,22 @@ export default {
       let that = this;
       setInterval(function () {
         that.updateData()
+        that.mapChart.chart.setOption({
+          series: [{
+            name: '中国',
+            type: 'map',
+            mapType: 'china',
+            label: {
+              normal: {
+                show: false,//显示省份标签
+              },
+              emphasis: {
+                show: true,//对应的鼠标悬浮效果
+              }
+            },
+            data: that.mapChart.dataMap
+          }]
+        }),
         that.lineChart.chart.setOption({
           series: [{
             name: 'VALUE',
@@ -306,20 +280,10 @@ export default {
     updateData() {
       this.$axios.post('/getList/getMap')
         .then((response) => {
-          // "status": 0,
-          //   "msg": "fetch success",
-          //   "data": [
-          //   {
-          //     "number": 105,
-          //     "_id": {
-          //       "$oid": "5fb5d7bb4280fb946c93d88a"
-          //     },
-          //     "hometeam": "拜仁慕尼黑"
-          //   }
           let array = []
           this.barChartHomeTeam.category = [];
           this.barChartHomeTeam.data = [];
-          array = JSON.parse(JSON.stringify(response.data.data))
+          array = JSON.parse(JSON.stringify(response.data.data.teamArray))
           for (let i = 0; i < array.length; i++) {
             // const obj = { // 关键！ 创建一个新对象
             //   id: i + 1,
@@ -330,8 +294,37 @@ export default {
             // }
             this.barChartHomeTeam.category.push(array[i].hometeam)
             this.barChartHomeTeam.data.push(array[i].number)
-
           }
+
+          let array2 = []
+          this.mapChart.dataMap = [];
+          array2 = JSON.parse(JSON.stringify(response.data.data.regionArray))
+          for (let i = 0; i < array2.length; i++) {
+            const obj = { // 关键！ 创建一个新对象
+              name: array2[i].name,
+              value: array2[i].value,
+            }
+            this.mapChart.dataMap.push(obj)
+          }
+
+          let specialMap = [];
+          // 对dataMap进行处理，使其可以直接在页面上展示
+          for (let i = 0; i < specialMap.length; i++) {
+            for (let j = 0; j < this.mapChart.dataMap.length; j++) {
+              if (specialMap[i] == this.mapChart.dataMap[j].name) {
+                this.mapChart.dataMap[j].selected = true;
+                break;
+              }
+            }
+          }
+
+          // [
+          //   {name: '北京', value: '100'}
+          // "data": {
+          //   "regionArray": [
+          //     {
+          //       "北京": 8
+          //     },
           //
           // this.message = response.data.status
           // console.log(response)
