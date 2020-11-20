@@ -5,11 +5,10 @@
     <div class="content">
       <div id="map-wrap" :style="{width: '33%', height: '400px'}"></div>
       <div id="barChartSimple" :style="{width: '33%', height: '400px'}"></div>
-      <!--      <div id="barChartStatic" :style="{width: '800px', height: '600px'}"></div>-->
       <div id="barChartHomeTeam" :style="{width: '33%', height: '400px'}"></div>
       <div id="lineChart" :style="{width: '33%', height: '400px'}"></div>
-      <!-- 这里以后是地图 -->
-
+      <div id="genderChart" :style="{width: '33%', height: '400px'}"></div>
+      <div id="wordChart" :style="{width: '33%', height: '400px'}"></div>
     </div>
   </div>
 </template>
@@ -40,13 +39,19 @@ export default {
         category: ['cate1', 'cate2'],
         data: []
       },
-      barChartStatic: {
+      barChartHomeTeam: {
         chart: null,
         option: null,
-        category: ['cate1', 'cate2', 'cate3'],
+        category: [],
         data: []
       },
-      barChartHomeTeam: {
+      genderChart: {
+        chart: null,
+        option: null,
+        category: [],
+        data: []
+      },
+      wordChart: {
         chart: null,
         option: null,
         category: [],
@@ -59,6 +64,7 @@ export default {
     this.createBarTable()
     this.createMap()
     this.createBarChartHomeTeam()
+    this.createGenderChart()
   },
   methods: {
     start() {
@@ -75,7 +81,7 @@ export default {
         },
         tooltip: {
           formatter: function (params) {
-            var info = '<p style="font-size:8px">' + params.name + '</p><p style="font-size:8px">'+params.value+'人</p>'
+            var info = '<p style="font-size:8px">' + params.name + '</p><p style="font-size:8px">' + params.value + '人</p>'
             return info;
           },
           backgroundColor: "#575555",//提示标签背景颜色
@@ -230,6 +236,112 @@ export default {
         this.lineChart.chart.setOption(this.lineChart.option, true);
       }
     },
+    createGenderChart() {
+      let dom = document.getElementById("genderChart")
+      this.genderChart.chart = this.$echarts.init(dom)
+      this.genderChart.option = {
+        title: {
+          text: 'pie test',
+          // x 设置水平安放位置，默认左对齐，可选值：'center' ¦ 'left' ¦ 'right' ¦ {number}（x坐标，单位px）
+          x: 'center',
+          // y 设置垂直安放位置，默认全图顶端，可选值：'top' ¦ 'bottom' ¦ 'center' ¦ {number}（y坐标，单位px）
+          y: 'top',
+          // itemGap设置主副标题纵向间隔，单位px，默认为10，
+          itemGap: 30,
+          backgroundColor: '#EEE',
+          // 主标题文本样式设置
+          textStyle: {
+            fontSize: 26,
+            fontWeight: 'bolder',
+            color: '#000080'
+          },
+          // 副标题文本样式设置
+          subtextStyle: {
+            fontSize: 18,
+            color: '#8B2323'
+          }
+        },
+        legend: {
+          // orient 设置布局方式，默认水平布局，可选值：'horizontal'（水平） ¦ 'vertical'（垂直）
+          orient: 'vertical',
+          // x 设置水平安放位置，默认全图居中，可选值：'center' ¦ 'left' ¦ 'right' ¦ {number}（x坐标，单位px）
+          x: 'left',
+          // y 设置垂直安放位置，默认全图顶端，可选值：'top' ¦ 'bottom' ¦ 'center' ¦ {number}（y坐标，单位px）
+          y: 'center',
+          itemWidth: 24,   // 设置图例图形的宽
+          itemHeight: 18,  // 设置图例图形的高
+          textStyle: {
+            color: '#666'  // 图例文字颜色
+          },
+          // itemGap设置各个item之间的间隔，单位px，默认为10，横向布局时为水平间隔，纵向布局时为纵向间隔
+          itemGap: 30,
+          backgroundColor: '#eee',  // 设置整个图例区域背景颜色
+          // data: ['北京','上海','广州','深圳','郑州']
+          data: this.genderChart.category
+        },
+        series: [
+          {
+            name: '生源地',
+            type: 'pie',
+            // radius: '50%',  // 设置饼状图大小，100%时，最大直径=整个图形的min(宽，高)
+            radius: ['30%', '60%'],  // 设置环形饼状图， 第一个百分数设置内圈大小，第二个百分数设置外圈大小
+            center: ['50%', '50%'],  // 设置饼状图位置，第一个百分数调水平位置，第二个百分数调垂直位置
+            // data: [
+            //   {value:335, name:'北京'},
+            //   {value:310, name:'上海'},
+            //   {value:234, name:'广州'},
+            //   {value:135, name:'深圳'},
+            //   {value:148, name:'郑州'}
+            // ],
+            data: this.genderChart.data,
+            // itemStyle 设置饼状图扇形区域样式
+            itemStyle: {
+              // emphasis：英文意思是 强调;着重;（轮廓、图形等的）鲜明;突出，重读
+              // emphasis：设置鼠标放到哪一块扇形上面的时候，扇形样式、阴影
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(30, 144, 255，0.5)'
+              }
+            },
+            // 设置值域的那指向线
+            labelLine: {
+              normal: {
+                show: false   // show设置线是否显示，默认为true，可选值：true ¦ false
+              }
+            },
+            // 设置值域的标签
+            label: {
+              normal: {
+                position: 'inner',  // 设置标签位置，默认在饼状图外 可选值：'outer' ¦ 'inner（饼状图上）'
+                // formatter: '{a} {b} : {c}个 ({d}%)'   设置标签显示内容 ，默认显示{b}
+                // {a}指series.name  {b}指series.data的name
+                // {c}指series.data的value  {d}%指这一部分占总数的百分比
+                formatter: '{c}'
+              }
+            }
+          }
+        ],
+        tooltip: {
+          // trigger 设置触发类型，默认数据触发，可选值：'item' ¦ 'axis'
+          trigger: 'item',
+          showDelay: 20,   // 显示延迟，添加显示延迟可以避免频繁切换，单位ms
+          hideDelay: 20,   // 隐藏延迟，单位ms
+          backgroundColor: 'rgba(255,0,0,0.7)',  // 提示框背景颜色
+          textStyle: {
+            fontSize: '16px',
+            color: '#000'  // 设置文本颜色 默认#FFF
+          },
+          // formatter设置提示框显示内容
+          // {a}指series.name  {b}指series.data的name
+          // {c}指series.data的value  {d}%指这一部分占总数的百分比
+          formatter: '{b} : {c}个 ({d}%)'
+        }
+      }
+      if (this.genderChart.option && typeof this.genderChart.option === "object") {
+        this.genderChart.chart.setOption(this.genderChart.option, true);
+      }
+    },
     addData() {
       let that = this;
       setInterval(function () {
@@ -249,7 +361,7 @@ export default {
             },
             data: that.mapChart.dataMap
           }]
-        }),
+        })
         that.lineChart.chart.setOption({
           series: [{
             name: 'VALUE',
@@ -271,6 +383,53 @@ export default {
             name: 'VALUE',
             data: that.barChartHomeTeam.data
           }]
+        })
+        that.genderChart.chart.setOption({
+          legend: {
+            data: that.genderChart.category
+          },
+          series: [
+            {
+              type: 'pie',
+              // radius: '50%',  // 设置饼状图大小，100%时，最大直径=整个图形的min(宽，高)
+              radius: ['30%', '60%'],  // 设置环形饼状图， 第一个百分数设置内圈大小，第二个百分数设置外圈大小
+              center: ['50%', '50%'],  // 设置饼状图位置，第一个百分数调水平位置，第二个百分数调垂直位置
+              // data: [
+              //   {value:335, name:'北京'},
+              //   {value:310, name:'上海'},
+              //   {value:234, name:'广州'},
+              //   {value:135, name:'深圳'},
+              //   {value:148, name:'郑州'}
+              // ],
+              data: that.genderChart.data,
+              // itemStyle 设置饼状图扇形区域样式
+              itemStyle: {
+                // emphasis：英文意思是 强调;着重;（轮廓、图形等的）鲜明;突出，重读
+                // emphasis：设置鼠标放到哪一块扇形上面的时候，扇形样式、阴影
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(30, 144, 255，0.5)'
+                }
+              },
+              // 设置值域的那指向线
+              labelLine: {
+                normal: {
+                  show: false   // show设置线是否显示，默认为true，可选值：true ¦ false
+                }
+              },
+              // 设置值域的标签
+              label: {
+                normal: {
+                  position: 'inner',  // 设置标签位置，默认在饼状图外 可选值：'outer' ¦ 'inner（饼状图上）'
+                  // formatter: '{a} {b} : {c}个 ({d}%)'   设置标签显示内容 ，默认显示{b}
+                  // {a}指series.name  {b}指series.data的name
+                  // {c}指series.data的value  {d}%指这一部分占总数的百分比
+                  formatter: '{c}'
+                }
+              }
+            }
+          ]
         })
       }, 1000)
       // if (this.lineChart.option && typeof this.lineChart.option === "object") {
@@ -318,16 +477,27 @@ export default {
             }
           }
 
-          // [
-          //   {name: '北京', value: '100'}
-          // "data": {
-          //   "regionArray": [
-          //     {
-          //       "北京": 8
-          //     },
-          //
-          // this.message = response.data.status
-          // console.log(response)
+          let genderArray = [];
+          this.genderChart.category = [];
+          this.genderChart.data = [];
+          // "genderArray": [
+          //   {
+          //     "number": 108,
+          //     "gender": null,
+
+          // {value:335, name:'北京'},
+          genderArray = JSON.parse(JSON.stringify(response.data.data.genderArray))
+          for (let i = 0; i < genderArray.length; i++) {
+            if(genderArray[i].gender === null) {
+              genderArray[i].gender = 'null'
+            }
+            const obj = { // 关键！ 创建一个新对象
+              name: genderArray[i].gender,
+              value: genderArray[i].number
+            }
+            this.genderChart.data.push(obj)
+            this.genderChart.category.push(genderArray[i].gender);
+          }
         })
         .catch(function (error) {
           console.log(error)
