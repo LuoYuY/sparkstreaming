@@ -82,7 +82,7 @@ export default {
         },
         tooltip: {
           formatter: function (params) {
-            var info = '<p style="font-size:8px">' + params.name + '</p><p style="font-size:8px">' + params.value + '人</p>'
+            var info = '<span style="font-size:8px">' + params.name + '</span><span style="font-size:8px">' + params.value + '人</span>'
             return info;
           },
           backgroundColor: "#575555",//提示标签背景颜色
