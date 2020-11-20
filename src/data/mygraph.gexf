@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2">
+ <graph mode="static" defaultedgetype="directed">
+ <nodes>
+ <node id="4" label="(u,John,22,teamA)"></node>
+ <node id="1" label="(u,Alice,20,teamA)"></node>
+ <node id="6" label="(t,TeamB,null,null)"></node>
+ <node id="3" label="(u,Tom,27,teamB)"></node>
+ <node id="5" label="(t,TeamA,null,null)"></node>
+ <node id="2" label="(u,Bob,27,teamB)"></node>
+ </nodes>
+ <edges>
+ <edge source="1" target="2" label="follow"></edge>
+ <edge source="1" target="3" label="follow"></edge>
+ <edge source="1" target="4" label="follow"></edge>
+ <edge source="1" target="5" label="like"></edge>
+ <edge source="1" target="5" label="like" ></edge>
+ <edge source="2" target="6" label="like" ></edge>
+ <edge source="3" target="6" label="like" ></edge>
+ <edge source="4" target="5" label="like" ></edge>
+ </edges>
+ </graph>
+</gexf>

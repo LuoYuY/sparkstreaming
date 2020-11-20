@@ -5,6 +5,7 @@
     <div class="content">
       <div id="map-wrap" :style="{width: '33%', height: '400px'}"></div>
       <div id="barChartSimple" :style="{width: '33%', height: '400px'}"></div>
+      <!--      <div id="barChartStatic" :style="{width: '800px', height: '600px'}"></div>-->
       <div id="barChartHomeTeam" :style="{width: '33%', height: '400px'}"></div>
       <div id="lineChart" :style="{width: '33%', height: '400px'}"></div>
       <div id="genderChart" :style="{width: '33%', height: '400px'}"></div>

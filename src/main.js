@@ -8,6 +8,7 @@ import locale from 'iview/dist/locale/en-US'
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
 import axios from "axios";
+import {dataTool} from "echarts/src/echarts";
 
 Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false
