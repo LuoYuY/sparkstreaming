@@ -11,6 +11,8 @@
       <!-- 这里以后是地图 -->
 
       <!-- ******************************************************************************** -->
+      <!-- 显示男女比例的饼状图 -->
+      <div id="pieSex" :style="{width: '33%', height: '400px'}"></div>
       <!-- 显示用户与用户之间的关注关系 -->
       <div id="relationChartUserAndUser" :style="{width: '33%', height: '400px'}"></div>
       <!-- 显示用户与球队之间的喜爱关系 -->
@@ -23,6 +25,7 @@
 
 <script>
 import china from '../assets/china'
+import $ from 'jquery'
 
 export default {
   name: 'Echart',
@@ -60,6 +63,10 @@ export default {
         data: []
       },
       /*****/
+      pieSex: {
+        chart: null,
+        data: []
+      },
       relationChartUserAndUser: {
         chart: null,
         data: [],
@@ -79,6 +86,7 @@ export default {
     this.createMap()
     this.createBarChartHomeTeam()
     /*****/
+    this.createPieSex()
     this.createRelationChartUserAndUser()
     this.createRelationChartUserAndTeam()
     /*****/
@@ -253,6 +261,26 @@ export default {
       }
     },
     /*****************************************************************************************/
+    createPieSex(){
+      let dom = document.getElementById("pieSex")
+      this.pieSex.chart = this.$echarts.init(dom)
+      this.pieSex.option = {
+        title: {
+          text: '用户男女比例',
+          top: 'bottom',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: ['男', '女', '未知', '保密']
+        },
+      }
+    },
     createRelationChartUserAndTeam(){
       let dom = document.getElementById("relationChartUserAndTeam")
       this.relationChartUserAndTeam.chart = this.$echarts.init(dom)
@@ -344,7 +372,15 @@ export default {
             type: 'graph',
             layout: "circular",
             roam: true,//设置可以拖拽和缩放
-            focusNodeAdjacency: true,//设置突出显示
+            //focusNodeAdjacency: true,//设置突出显示
+            label: {
+              position: 'right',
+              formatter: '{b}'
+            },
+            lineStyle: {
+              color: 'source',
+              curveness: 0.3
+            },
             links: that.relationChartUserAndUser.links,
             data: that.relationChartUserAndUser.data
           }]
@@ -483,17 +519,20 @@ export default {
       //在这里进行数据的获取，生成关系图
       /**********************************************************************/
       this.relationChartUserAndUser.data = []
-      //this.relationChartUserAndUser.data.push({id :"1",name :"ddd"},{id :"2",name :"ccc"})
+      this.relationChartUserAndUser.data.push({id :"1",name :"ddd"},{id :"2",name :"ccc"})
       this.relationChartUserAndUser.links = []
-      //this.relationChartUserAndUser.links.push({source :"1",target :"2"})
-      this.relationChartUserAndUser.showLoading()
+      this.relationChartUserAndUser.links.push({source :"1",target :"2"})
       let myChart = this.relationChartUserAndUser.chart
       let myData = this.relationChartUserAndUser.data
-      myChart.showLoading();
-      $.get('src/data/mygraph.gexf', function (xml) {
-        myChart.hideLoading();
-        let graph = echarts.dataTool.gexf.parse(xml);
+      let myLinks = this.relationChartUserAndUser.links
+      //alert("myname4")
+
+      $.get('../data/mygraph.gexf', function (xml) {
+        alert("myname2")
+        var graph = echarts.dataTool.gexf.parse(xml);
+        alert("myname");
         graph.nodes.forEach(function (node) {
+          alert(node);
           node.itemStyle = null;
           node.value = node.symbolSize;
           node.symbolSize /= 1.5;
@@ -504,9 +543,9 @@ export default {
           };
           node.category = node.attributes.modularity_class;
         });
-        this.relationChartUserAndUser.data.push(graph.data)
-        this.relationChartUserAndUser
-        myChart.setOption(option);
+        myData.push(graph.data);
+        myLinks.push(graph.links);
+        //myChart.setOption(option);
       }, 'xml');
       this.relationChartUserAndTeam.data = []
       this.relationChartUserAndTeam.data.push({id :"1",name :"江苏苏宁易购",category :0},{id :"2",name :"球迷1",category :1})
