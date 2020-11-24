@@ -210,15 +210,6 @@ export default {
               top: 'bottom',
               left: 'center'
             },
-            // tooltip: {
-            //   formatter: function (params) {
-            //     var info = '<span style="font-size:8px">'+ params.value[0] + '</span>'
-            //     return info;
-            //   },
-            //   backgroundColor: "#575555",//提示标签背景颜色
-            //   textStyle: {color: "#fff"} //提示标签字体颜色
-            // },
-            // symbolSize: 300,
             roam: true,
             focusNodeAdjacency: true,
             label: {
