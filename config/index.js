@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {'/api': { //代理标识
         target: 'http://172.19.241.194:8093',//指向的实际地址
-        // target: 'http://localhost:8093',//指向的实际地址
+        //target: 'http://localhost:8093',//指向的实际地址
         changeOrigin: true, // 允许跨域
         pathRewrite: {
           // 标识替换
@@ -26,6 +26,8 @@ module.exports = {
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
     port: 8085, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    //host: '172.19.241.194',
+    //port:8093,
     autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,

@@ -10,6 +10,11 @@
       <div id="lineChart" :style="{width: '33%', height: '400px'}"></div>
       <div id="genderChart" :style="{width: '33%', height: '400px'}"></div>
       <div id="wordChart" :style="{width: '33%', height: '400px'}"></div>
+      <!-- ----------------------------------------------------------------- -->
+      <div :stylr="{width: '33%' , height: '500px'}">
+        <Table border id="tableImpactUser" height="400" width="400" :columns="columns2" :data="data2"></Table>
+        <span>影响力球迷</span>
+      </div>
     </div>
   </div>
 </template>
@@ -22,6 +27,62 @@ export default {
   data() {
     return {
       message: null,
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      columns2: [
+        {
+          title: '球队',
+          key: 'team'
+        },
+        {
+          title: '大V球迷',
+          key: 'biguser',
+          width: 150,
+          align: 'center',
+          render: (h, params) => {
+            return h('div', [
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.show(params.index)
+                  }
+                }
+              }, 'View')
+            ]);
+          }
+        },
+        {
+          title: '活跃球迷',
+          key: 'acuser',
+          width: 150,
+          align: 'center',
+          render: (h, params) => {
+            return h('div', [
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.show(params.index)
+                  }
+                }
+              }, 'View')
+            ]);
+          }
+        }
+      ],
+      data2:[],
       mapChart: {
         chart: null,
         option: null,
@@ -573,6 +634,24 @@ export default {
               value: wordArray[i].number
             }
             this.wordChart.data.push(obj)
+          }
+
+          let followArray = []
+          this.data2 = [];
+          console.log(response.data.data)
+          followArray = JSON.parse(JSON.stringify(response.data.data.followArray))
+          // for (let i = 0; i < followArray.length; i++) {
+          //   //alert(followArray[i])
+          // }
+          let replyArray = []
+          replyArray = JSON.parse(JSON.stringify(response.data.data.replyArray))
+          for (let i = 0; i < replyArray.length; i++) {
+
+            // const obj = { // 关键！ 创建一个新对象
+            //   name: wordArray[i].word,
+            //   value: wordArray[i].number
+            // }
+            // this.data2.push(obj)
           }
         })
         .catch(function (error) {
