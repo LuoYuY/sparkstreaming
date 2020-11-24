@@ -8,23 +8,10 @@
 
     <div class="content" style="margin-top: 50px">
       <div id="map-wrap" :style="{width: '33%', height: '400px'}"></div>
-      <div id="dynamicGraph" :style="{width: '33%', height: '400px'}">
-        <DatePicker type="date"  format="yyyy-MM-dd" placeholder="left"  @on-change="barChartSimple.leftDate=$event" v-model="barChartSimple.leftDate" ></DatePicker>
-        <DatePicker type="date"  format="yyyy-MM-dd" placeholder="right"  @on-change="barChartSimple.rightDate=$event" v-model="barChartSimple.rightDate" ></DatePicker>
-        <Button v-on:click="getDynamicData">submit</Button>
 
-        <div id="barChartSimple" :style="{width: '100%', height: '400px'}"></div>
-        <p style="margin-top: -30px">{{ barChartSimple.title }}</p>
-      </div>
       <!--      <div id="barChartStatic" :style="{width: '800px', height: '600px'}"></div>-->
       <div id="barChartHomeTeam" :style="{width: '33%', height: '400px'}"></div>
-      <div id="dateChart" :style="{width: '33%', height: '400px'}">
-<!--        v-model="lineChart.date"-->
-        <DatePicker type="date"  format="yyyy-MM-dd" placeholder="时间"  @on-change="lineChart.date=$event" v-model="lineChart.date" ></DatePicker>
-        <Button v-on:click="getDayData">submit</Button>
-        <Button v-on:click="stop">stop</Button>
-        <div id="lineChart" :style="{width: '100%', height: '400px'}"> </div>
-      </div>
+
       <div id="genderChart" :style="{width: '33%', height: '400px'}"></div>
       <div id="wordChart" :style="{width: '33%', height: '400px'}"></div>
     </div>
@@ -44,22 +31,6 @@ export default {
         chart: null,
         option: null,
         dataMap: []
-      },
-      lineChart: {
-        chart: null,
-        option: null,
-        time: ['0-2h', '2-4h', '4-6h', '6-8h', '8-10h', '10-12h', '12-14h', '14-16h', '16-18h', '18-20h', '20-22h', '22-24h'],
-        data: []
-      },
-      barChartSimple: {
-        title: null,
-        chart: null,
-        option: null,
-        leftDate:null,
-        rightDate:null,
-        time: ['0-2', '2-4', '4-6', '6-8', '8-10', '10-12', '12-14', '14-16', '16-18', '18-20', '20-22', '22-24'],
-        category: ['比赛日', '非比赛日'],
-        data: []
       },
       barChartHomeTeam: {
         chart: null,
@@ -81,8 +52,6 @@ export default {
     }
   },
   mounted() {
-    this.createLineTable()
-    this.createBarTable()
     this.createMap()
     this.createBarChartHomeTeam()
     this.createGenderChart()
@@ -97,7 +66,7 @@ export default {
     },
     startStreaming() {
       alert(" in start ")
-      this.$axios.get('/getList/start')
+      this.$axios.get('/getList/start?type=comment')
         .then((response) => {
           console.log(response)
         })
@@ -108,84 +77,6 @@ export default {
           // always executed
         })
     },
-    getDynamicData() {
-      let arrayLeft = []
-      let arrayRight = []
-      console.log(this.barChartSimple.leftDate)
-      console.log(this.barChartSimple.rightDate)
-      this.$axios.get('/getList/getDayData?date=' + this.barChartSimple.leftDate)
-        .then((response) => {
-          arrayLeft = JSON.parse(JSON.stringify(response.data.data.obj.array))
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-        .then(function () {
-          // always executed
-        })
-      this.$axios.get('/getList/getDayData?date=' + this.barChartSimple.rightDate)
-        .then((response) => {
-          arrayRight= JSON.parse(JSON.stringify(response.data.data.obj.array))
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-        .then(function () {
-          // always executed
-        })
-      let that = this
-      for(let i=0; i<that.barChartSimple.time.length; i++) {
-        //clearTimeout(this.timer);  //清除延迟执行
-        (function(i) {
-          setTimeout(function() {
-            console.log(i);
-            that.barChartSimple.data = [];
-            that.barChartSimple.title = that.barChartSimple.time[i];
-            that.barChartSimple.data.push(arrayLeft[i])
-            that.barChartSimple.data.push(arrayRight[i])
-            console.log("left:"+arrayLeft[i])
-            that.barChartSimple.chart.setOption({
-              series: [{
-                name: 'VALUE',
-                data: that.barChartSimple.data
-              }]
-            });
-          }, (i + 1) * 1000);
-        })(i)
-      }
-    },
-    getDayData() {
-      console.log(this.lineChart.date)
-      let that = this;
-      this.timer = setInterval(function () {
-        that.$axios.get('/getList/getDayData?date=' + that.lineChart.date)
-          .then((response) => {
-            that.lineChart.data = []
-            let array = []
-            array = JSON.parse(JSON.stringify(response.data.data.obj.array))
-            //array = response.data.data.obj.array
-            for (let i = 0; i < array.length; i++) {
-              that.lineChart.data.push(array[i])
-              console.log(array[i])
-            }
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-          .then(function () {
-            // always executed
-          })
-        that.lineChart.chart.setOption({
-          series: [{
-            name: 'VALUE',
-            data: that.lineChart.data
-          }]
-        });
-      },1000)
-    },
-    randomData() {
-      return Math.round(Math.random() * 500);
-    },
     createMap() {
       this.mapChart.chart = this.$echarts.init(document.getElementById('map-wrap'));
       this.mapChart.option = {
@@ -194,13 +85,13 @@ export default {
         },
         tooltip: {
           formatter: function (params) {
-            var info = '<span style="font-size:8px">' + params.name + '</span><span style="font-size:8px">' + params.value + '人</span>'
+            var info = '<span style="font-size:15px">' + params.name + '</span><span style="font-size:15px">' + params.value + '人</span>'
             return info;
           },
           backgroundColor: "#575555",//提示标签背景颜色
           textStyle: {color: "#fff"} //提示标签字体颜色
         },
-//左侧小导航图标
+        //左侧小导航图标
         visualMap: {
           align: "auto", //指定组件中手柄和文字的摆放位置.可选值为：‘auto’ 自动决定。‘left’ 手柄和label在右。‘right’ 手柄和label在左。‘top’ 手柄和label在下。‘bottom’ 手柄和label在上。
           left: "3%", //组件离容器左侧的距离,‘left’, ‘center’, ‘right’,‘20%’
@@ -212,9 +103,9 @@ export default {
           x: 'left',
           y: 'center',
           splitList: [
-            {start: 800, end: 1000},
-            {start: 600, end: 800}, {start: 400, end: 600},
-            {start: 200, end: 400}, {start: 0, end: 200},
+            {start: 4000, end: 5000},
+            {start: 3000, end: 4000}, {start: 2000, end: 3000},
+            {start: 1000, end: 2000}, {start: 0, end: 1000},
           ],
           color: ['#e70707', '#f13131', '#f59797',
             '#eecece', '#eecece', '#f3eded'],
@@ -315,39 +206,6 @@ export default {
       }
       if (this.barChartHomeTeam.option && typeof this.barChartHomeTeam.option === "object") {
         this.barChartHomeTeam.chart.setOption(this.barChartHomeTeam.option, true);
-      }
-    },
-    createLineTable() {
-      let dom = document.getElementById("lineChart")
-      this.lineChart.chart = this.$echarts.init(dom)
-      // this.addData();
-      this.lineChart.option = {
-        color: ['#e27a13'],
-        // title: "barChartHomeTeam",
-        tooltip: {
-          show: true
-        },
-        xAxis: {
-          type: 'category',
-          data: this.lineChart.time,
-          grid: {
-            left: '18%',
-            bottom: '38%'
-          }
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: [
-          {
-            name: 'VALUE',
-            type: 'bar',
-            data: this.lineChart.data,
-          }
-        ]
-      }
-      if (this.lineChart.option && typeof this.lineChart.option === "object") {
-        this.lineChart.chart.setOption(this.lineChart.option, true);
       }
     },
     createGenderChart() {
@@ -595,6 +453,7 @@ export default {
     updateData() {
       this.$axios.post('/getList/getMap')
         .then((response) => {
+          console.log(response)
           let array = []
           this.barChartHomeTeam.category = [];
           this.barChartHomeTeam.data = [];
@@ -603,7 +462,6 @@ export default {
             this.barChartHomeTeam.category.push(array[i].hometeam)
             this.barChartHomeTeam.data.push(array[i].number)
           }
-
           let array2 = []
           this.mapChart.dataMap = [];
           array2 = JSON.parse(JSON.stringify(response.data.data.regionArray))
@@ -614,7 +472,6 @@ export default {
             }
             this.mapChart.dataMap.push(obj)
           }
-
           let specialMap = [];
           // 对dataMap进行处理，使其可以直接在页面上展示
           for (let i = 0; i < specialMap.length; i++) {
@@ -625,16 +482,9 @@ export default {
               }
             }
           }
-
           let genderArray = [];
           this.genderChart.category = [];
           this.genderChart.data = [];
-          // "genderArray": [
-          //   {
-          //     "number": 108,
-          //     "gender": null,
-
-          // {value:335, name:'北京'},
           genderArray = JSON.parse(JSON.stringify(response.data.data.genderArray))
           for (let i = 0; i < genderArray.length; i++) {
             if(genderArray[i].gender === null) {
@@ -647,16 +497,6 @@ export default {
             this.genderChart.data.push(obj)
             this.genderChart.category.push(genderArray[i].gender);
           }
-
-          // "wordArray": [
-          //   {
-          //     "number": 98,
-          //     "_id": {
-          //       "$oid": "5fb6723b4280fbd9dc0966e2"
-          //     },
-          //     "word": "的"
-          //   },
-
           let wordArray = []
           this.wordChart.data = [];
           wordArray = JSON.parse(JSON.stringify(response.data.data.wordArray))

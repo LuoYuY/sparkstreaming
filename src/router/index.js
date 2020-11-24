@@ -4,6 +4,8 @@ import HelloWorld from '../components/HelloWorld'
 import Echart from  '../components/echartTest'
 import graphx from '../components/graphx'
 import graphTest from '../components/graphxTest'
+import CommentsChange from "../components/commentsChange";
+import UsersChange from "../components/usersChange";
 Vue.use(Router)
 
 export default new Router({
@@ -28,6 +30,16 @@ export default new Router({
       path: '/graphTest',
       name: 'graphTest',
       component: graphTest
+    },
+    {
+      path: '/comments',
+      name: 'commentsChange',
+      component: CommentsChange
+    },
+    {
+      path: '/users',
+      name: 'usersChange',
+      component: UsersChange
     },
     {
       path: '/Hello',

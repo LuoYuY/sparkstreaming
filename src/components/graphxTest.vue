@@ -248,7 +248,7 @@ export default {
       })
     },
     updateData() {
-      this.$axios.get('/download/graphxdata/subGraph1.gexf')
+      this.$axios.get('/download/graphxdata/graph1.gexf')
         .then((response) => {
           console.log(response)
           let xml = response.data
@@ -263,6 +263,7 @@ export default {
               name: graph.nodes[i].id,
               draggable: true,
               category: cate,
+              value: graph.nodes[i].name,
               itemStyle: {
                 color: 'black'
               }
@@ -288,15 +289,6 @@ export default {
               top: 'bottom',
               left: 'center'
             },
-            // tooltip: {
-            //   formatter: function (params) {
-            //     var info = '<span style="font-size:8px">'+ params.value[0] + '</span>'
-            //     return info;
-            //   },
-            //   backgroundColor: "#575555",//提示标签背景颜色
-            //   textStyle: {color: "#fff"} //提示标签字体颜色
-            // },
-            // symbolSize: 300,
             roam: true,
             focusNodeAdjacency: true,
             label: {
@@ -313,6 +305,14 @@ export default {
               }
             }],
             draggable:true,
+            tooltip: {
+              formatter: function (params) {
+                var info = '<span style="font-size:20px">'+ params.name+ ":" + params.value + '</span>'
+                return info;
+              },
+              backgroundColor: "#575555",//提示标签背景颜色
+              textStyle: {color: "#fff"} //提示标签字体颜色
+            },
             series : [
               {
                 name: 'USER',
@@ -337,11 +337,6 @@ export default {
                     case 'subGraph2': return 25;break;
                   }
                 },
-                // (value: Array|number, params: Object) => number|Array
-                // symbolSize: (rawValue, params) => {
-                //   params.symbolSize =
-                //   return params.symbolSize
-                // },
                 force: {
                   repulsion: 100,
                   // layoutAnimation: true,
@@ -360,7 +355,7 @@ export default {
         })
 
 
-      this.$axios.get('/download/graphxdata/subGraph2.gexf')
+      this.$axios.get('/download/graphxdata/graph2.gexf')
         .then((response) => {
           console.log(response)
           let xml = response.data
@@ -375,6 +370,7 @@ export default {
               name: graph.nodes[i].id,
               draggable: true,
               category: cate,
+              value: graph.nodes[i].name
             }
             this.graphTest2.data.push(obj)
           }
@@ -409,6 +405,14 @@ export default {
                 return a.name;
               })
             }],
+            tooltip: {
+              formatter: function (params) {
+                var info = '<span style="font-size:20px">'+ params.name+ ":" + params.value + '</span>'
+                return info;
+              },
+              backgroundColor: "#575555",//提示标签背景颜色
+              textStyle: {color: "#fff"} //提示标签字体颜色
+            },
             draggable: true,
             series: [
               {
