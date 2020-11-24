@@ -111,7 +111,7 @@ export default {
       that.updateData()
     },
     updateData() {
-      this.$axios.get('/download/graphxdata/subGraph1.gexf')
+      this.$axios.get('/download/mygraph.gexf')
         .then((response) => {
           console.log(response)
           let xml = response.data
@@ -124,6 +124,16 @@ export default {
             let cate = 'subGraph1'
             const obj = { // 关键！ 创建一个新对象
               name: graph.nodes[i].id,
+              value:  graph.nodes[i].name.slice(3,-1).split(','),
+              // // (value: Array|number, params: Object) => number|Array
+              // symbolSize:(rawValue, params) => {
+              //
+              //   params.symbolSize = size[params.dataIndex]
+              //
+              //   return params.symbolSize
+              //
+              // },
+              // symbolSize: 20,
               draggable: true,
               category: cate,
               itemStyle: {

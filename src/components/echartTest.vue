@@ -2,12 +2,25 @@
   <div id="Chart">
     {{ message }}
     <Button v-on:click="start()">start</Button>
-    <div class="content">
+    <Button v-on:click="stop">stop</Button>
+    <div class="content" style="margin-top: 50px">
       <div id="map-wrap" :style="{width: '33%', height: '400px'}"></div>
-      <div id="barChartSimple" :style="{width: '33%', height: '400px'}"></div>
+      <div id="dynamicGraph" :style="{width: '33%', height: '400px'}">
+        <DatePicker type="date"  format="yyyy-MM-dd" placeholder="left"  @on-change="barChartSimple.leftDate=$event" v-model="barChartSimple.leftDate" ></DatePicker>
+        <DatePicker type="date"  format="yyyy-MM-dd" placeholder="right"  @on-change="barChartSimple.rightDate=$event" v-model="barChartSimple.rightDate" ></DatePicker>
+        <Button v-on:click="getDynamicData">submit</Button>
+        <p style="margin-top: 10px">{{ barChartSimple.title }}</p>
+        <div id="barChartSimple" :style="{width: '100%', height: '400px'}"></div>
+      </div>
       <!--      <div id="barChartStatic" :style="{width: '800px', height: '600px'}"></div>-->
       <div id="barChartHomeTeam" :style="{width: '33%', height: '400px'}"></div>
-      <div id="lineChart" :style="{width: '33%', height: '400px'}"></div>
+      <div id="dateChart" :style="{width: '33%', height: '400px'}">
+<!--        v-model="lineChart.date"-->
+        <DatePicker type="date"  format="yyyy-MM-dd" placeholder="时间"  @on-change="lineChart.date=$event" v-model="lineChart.date" ></DatePicker>
+        <Button v-on:click="getDayData">submit</Button>
+        <Button v-on:click="stop">stop</Button>
+        <div id="lineChart" :style="{width: '100%', height: '400px'}"> </div>
+      </div>
       <div id="genderChart" :style="{width: '33%', height: '400px'}"></div>
       <div id="wordChart" :style="{width: '33%', height: '400px'}"></div>
     </div>
@@ -21,6 +34,7 @@ export default {
   name: 'Echart',
   data() {
     return {
+      timer:null,
       message: null,
       mapChart: {
         chart: null,
@@ -30,14 +44,17 @@ export default {
       lineChart: {
         chart: null,
         option: null,
-        time: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10',
-          '10-11', '11-12', '12-13', '13-14', '14-15', '15-16', '16-17', '17-18', '18-19', '19-20', '20-21', '21-22', '22-23', '23-24'],
+        time: ['0-2', '2-4', '4-6', '6-8', '8-10', '10-12', '12-14', '14-16', '16-18', '18-20', '20-22', '22-24'],
         data: []
       },
       barChartSimple: {
+        title: null,
         chart: null,
         option: null,
-        category: ['cate1', 'cate2'],
+        leftDate:null,
+        rightDate:null,
+        time: ['0-2', '2-4', '4-6', '6-8', '8-10', '10-12', '12-14', '14-16', '16-18', '18-20', '20-22', '22-24'],
+        category: ['比赛日', '非比赛日'],
         data: []
       },
       barChartHomeTeam: {
@@ -70,6 +87,84 @@ export default {
   methods: {
     start() {
       this.addData();
+    },
+    stop() {
+      clearInterval(this.timer);
+    },
+    getDynamicData() {
+      let arrayLeft = []
+      let arrayRight = []
+      console.log(this.barChartSimple.leftDate)
+      console.log(this.barChartSimple.rightDate)
+      this.$axios.get('/getList/getDayData?date=' + this.barChartSimple.leftDate)
+        .then((response) => {
+          arrayLeft = JSON.parse(JSON.stringify(response.data.data.obj.array))
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+        .then(function () {
+          // always executed
+        })
+      this.$axios.get('/getList/getDayData?date=' + this.barChartSimple.rightDate)
+        .then((response) => {
+          arrayRight= JSON.parse(JSON.stringify(response.data.data.obj.array))
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+        .then(function () {
+          // always executed
+        })
+      let that = this
+      for(let i=0; i<that.barChartSimple.time.length; i++) {
+        //clearTimeout(this.timer);  //清除延迟执行
+        (function(i) {
+          setTimeout(function() {
+            console.log(i);
+            that.barChartSimple.data = [];
+            that.barChartSimple.title = that.barChartSimple.time[i];
+            that.barChartSimple.data.push(arrayLeft[i])
+            that.barChartSimple.data.push(arrayRight[i])
+            console.log("left:"+arrayLeft[i])
+            that.barChartSimple.chart.setOption({
+              series: [{
+                name: 'VALUE',
+                data: that.barChartSimple.data
+              }]
+            });
+          }, (i + 1) * 1000);
+        })(i)
+      }
+    },
+    getDayData() {
+      console.log(this.lineChart.date)
+      let that = this;
+      this.timer = setInterval(function () {
+        that.$axios.get('/getList/getDayData?date=' + that.lineChart.date)
+          .then((response) => {
+            that.lineChart.data = []
+            let array = []
+            array = JSON.parse(JSON.stringify(response.data.data.obj.array))
+            //array = response.data.data.obj.array
+            for (let i = 0; i < array.length; i++) {
+              that.lineChart.data.push(array[i])
+              console.log(array[i])
+            }
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+          .then(function () {
+            // always executed
+          })
+        that.lineChart.chart.setOption({
+          series: [{
+            name: 'VALUE',
+            data: that.lineChart.data
+          }]
+        });
+      },1000)
     },
     randomData() {
       return Math.round(Math.random() * 500);
@@ -210,26 +305,27 @@ export default {
       this.lineChart.chart = this.$echarts.init(dom)
       // this.addData();
       this.lineChart.option = {
+        color: ['#e27a13'],
+        // title: "barChartHomeTeam",
+        tooltip: {
+          show: true
+        },
         xAxis: {
           type: 'category',
-          boundaryGap: false,
-          data: this.lineChart.time
+          data: this.lineChart.time,
+          grid: {
+            left: '18%',
+            bottom: '38%'
+          }
         },
         yAxis: {
-          boundaryGap: [0, '200%'],
           type: 'value'
         },
         series: [
           {
             name: 'VALUE',
-            type: 'line',
-            smooth: true,
-            symbol: 'none',
-            stack: 'a',
-            areaStyle: {
-              normal: {}
-            },
-            data: this.lineChart.data
+            type: 'bar',
+            data: this.lineChart.data,
           }
         ]
       }
@@ -246,9 +342,8 @@ export default {
           // x 设置水平安放位置，默认左对齐，可选值：'center' ¦ 'left' ¦ 'right' ¦ {number}（x坐标，单位px）
           x: 'center',
           // y 设置垂直安放位置，默认全图顶端，可选值：'top' ¦ 'bottom' ¦ 'center' ¦ {number}（y坐标，单位px）
-          y: 'top',
+          y: 30,
           // itemGap设置主副标题纵向间隔，单位px，默认为10，
-          itemGap: 30,
           backgroundColor: '#EEE',
           // 主标题文本样式设置
           textStyle: {
@@ -393,7 +488,7 @@ export default {
     },
     addData() {
       let that = this;
-      setInterval(function () {
+      this.timer = setInterval(function () {
         that.updateData()
         that.mapChart.chart.setOption({
           series: [{
@@ -409,18 +504,6 @@ export default {
               }
             },
             data: that.mapChart.dataMap
-          }]
-        })
-        that.lineChart.chart.setOption({
-          series: [{
-            name: 'VALUE',
-            data: that.lineChart.data
-          }]
-        })
-        that.barChartSimple.chart.setOption({
-          series: [{
-            name: 'VALUE',
-            data: that.barChartSimple.data
           }]
         })
         that.barChartHomeTeam.chart.setOption({
@@ -500,13 +583,6 @@ export default {
           this.barChartHomeTeam.data = [];
           array = JSON.parse(JSON.stringify(response.data.data.teamArray))
           for (let i = 0; i < array.length; i++) {
-            // const obj = { // 关键！ 创建一个新对象
-            //   id: i + 1,
-            //   name: array[i].name,
-            //   reason: array[i].reason,
-            //   createDate: array[i].createDate.slice(1),
-            //   status: status
-            // }
             this.barChartHomeTeam.category.push(array[i].hometeam)
             this.barChartHomeTeam.data.push(array[i].number)
           }
@@ -581,16 +657,6 @@ export default {
         .then(function () {
           // always executed
         })
-
-      this.lineChart.data = []
-      for (let i = 0; i < 24; i++) {
-        this.lineChart.data.push((Math.random() - 0.4) * 10 + this.lineChart.data[this.lineChart.data.length - 1]);
-      }
-      this.barChartSimple.data = []
-      for (let i = 0; i < 2; i++) {
-        // this.barChartSimple.data.shift();
-        this.barChartSimple.data.push(Math.random() * 150);
-      }
     }
   }
 }
