@@ -111,7 +111,7 @@ export default {
       that.updateData()
     },
     updateData() {
-      this.$axios.get('/download/mygraph.gexf')
+      this.$axios.get('/download/graphxdata/subGraph1.gexf')
         .then((response) => {
           console.log(response)
           let xml = response.data
@@ -119,21 +119,11 @@ export default {
           console.log(graph)
           // //设置需要展示的graph的nodes基本属性，后面需要用于序列的data里
           this.graphTest.data = []
-          for (let i = 0; i < graph.nodes.length; i++) {
+          for(let i = 0; i < graph.nodes.length; i++) {
             //console.log(graph.nodes[i].name.split(',')[0])
             let cate = 'subGraph1'
             const obj = { // 关键！ 创建一个新对象
               name: graph.nodes[i].id,
-              value:  graph.nodes[i].name.slice(3,-1).split(','),
-              // // (value: Array|number, params: Object) => number|Array
-              // symbolSize:(rawValue, params) => {
-              //
-              //   params.symbolSize = size[params.dataIndex]
-              //
-              //   return params.symbolSize
-              //
-              // },
-              // symbolSize: 20,
               draggable: true,
               category: cate,
               itemStyle: {
@@ -144,10 +134,10 @@ export default {
           }
 
           this.graphTest.links = []
-          for (let i = 0; i < graph.links.length; i++) {
+          for(let i = 0; i < graph.links.length; i++) {
             const obj = { // 关键！ 创建一个新对象
               source: graph.links[i].source,
-              target: graph.links[i].target,
+              target:  graph.links[i].target,
               symbol: ['none', 'arrow'],
               value: graph.links[i].name,
             }
@@ -185,8 +175,8 @@ export default {
                 color: 'black'
               }
             }],
-            draggable: true,
-            series: [
+            draggable:true,
+            series : [
               {
                 name: 'USER',
                 layout: 'force',
@@ -206,12 +196,8 @@ export default {
                 symbolSize: (value, params) => {
                   //根据数据params中的data来判定数据大小
                   switch (params.data.category) {
-                    case 'subGraph1':
-                      return 20;
-                      break;
-                    case 'subGraph2':
-                      return 25;
-                      break;
+                    case 'subGraph1': return 20;break;
+                    case 'subGraph2': return 25;break;
                   }
                 },
                 // (value: Array|number, params: Object) => number|Array
@@ -222,7 +208,7 @@ export default {
                 force: {
                   repulsion: 100,
                   // layoutAnimation: true,
-                  edgeLength: 100
+                  edgeLength:100
                 }
               }
             ]
@@ -235,6 +221,7 @@ export default {
         .then(function () {
           // always executed
         })
+
 
       this.$axios.get('/download/graphxdata/subGraph2.gexf')
         .then((response) => {
